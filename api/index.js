@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import userRoutes from "./routes/userRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
 
+//dotenv configuration
 dotenv.config();
 
 const PORT = 3000;
@@ -26,3 +27,15 @@ app.listen(PORT,()=>{
 
 app.use("/api/user",userRoutes)
 app.use("/api/auth",authRoutes)
+
+
+//Error handleling Middleware
+app.use((err,req,res,next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "internal serer error"
+    return res.status(statusCode).json({
+        sucess:false,
+        message,
+        statusCode
+    })
+})

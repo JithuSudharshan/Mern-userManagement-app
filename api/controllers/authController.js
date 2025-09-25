@@ -1,17 +1,17 @@
 import User from "../models/userModel.js"
 import bcryptjs from "bcryptjs"
 
-export const signup = async(req,res)=>{
+export const signup = async(req,res,next)=>{
 
     try {
     const {username,email,password} = req.body
     const hashedPassword = bcryptjs.hashSync(password,10)
     const newUser = new User({username,email,password:hashedPassword})
     await newUser.save()
-    res.status(201).json({Message:"User created succesfully"});
+    res.status(201).json({Message:"User created successfully"});
     } catch (error) {
         if(error){
-            res.status(409).json({message:error.message})
+            next(error)
         }
 
     }
