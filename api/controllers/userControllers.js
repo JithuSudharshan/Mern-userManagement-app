@@ -1,6 +1,4 @@
-import express from "express"
-
- export const test = (resq,res)=>{
+export const test = (req,res)=>{
     res.json({
         message:"API is working"
     })
