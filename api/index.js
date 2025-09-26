@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import userRoutes from "./routes/userRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
+import cookieParser from "cookie-parser"
 
 //dotenv configuration
 dotenv.config();
@@ -11,30 +12,31 @@ const PORT = 3000;
 const app = express();
 
 app.use(express.json())
+app.use(cookieParser())
 
 //DB Configuration
-const DB_url =  process.env.MONGO_URL
+const DB_url = process.env.MONGO_URL
 mongoose.connect(DB_url)
-  .then(() => console.log("MongoDB connected successfully"))
-  .catch(err => console.error("MongoDB connection error:", err));
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch(err => console.error("MongoDB connection error:", err));
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     console.log("==================================")
     console.log(`Server listening to port ${PORT}`)
     console.log("==================================")
 
 })
 
-app.use("/api/user",userRoutes)
-app.use("/api/auth",authRoutes)
+app.use("/api/user", userRoutes)
+app.use("/api/auth", authRoutes)
 
 
 //Error handleling Middleware
-app.use((err,req,res,next) => {
+app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error"
     return res.status(statusCode).json({
-        sucess:false,
+        sucess: false,
         message,
         statusCode
     })

@@ -6,10 +6,8 @@ const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [imageUrl, setImageUrl] = useState(currentUser.profilePicture);
   const [loading, setLoading] = useState(false);
+  const [uploaded, setUploaded] = useState(false)
 
-  useEffect(() => {
-    console.log(imageUrl)
-  }, [imageUrl])
 
   // Handle file upload
   const handleFileUpload = async (e) => {
@@ -34,6 +32,10 @@ const Profile = () => {
       const data = await res.json();
       setImageUrl(data.secure_url); // Cloudinary hosted image URL
       setLoading(false);
+
+      if (data) {
+        setUploaded(true)
+      }
 
 
     } catch (error) {
@@ -63,6 +65,7 @@ const Profile = () => {
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
         />
         {loading && <p className="text-center text-sm text-gray-500">Uploading...</p>}
+        {uploaded && <p className="text-center text-green-500">image uploaded sucessfully!</p>}
 
         {/* Inputs */}
         <input
