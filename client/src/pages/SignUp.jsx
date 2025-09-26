@@ -1,5 +1,5 @@
 import { useState } from "react"
-import {Link} from "react-router-dom"
+import {Link , useNavigate} from "react-router-dom"
 
 const SignUp = () => {
 
@@ -7,6 +7,7 @@ const SignUp = () => {
   const [formData,setFormData] = useState({})
   const [loading,setloading]= useState(false)
   const [error,setError]= useState(false)
+  const navigate = useNavigate()
 
 
   const handleChange = (e)=>{
@@ -30,18 +31,19 @@ const SignUp = () => {
       },
       body:JSON.stringify(formData)
     })
-    const data = await res.json();
-    console.log(data)
+
     setloading(false)
+    
     if(data.sucess === false){
       setError(true)
       return;
     }
+    navigate('/sign-In')
     } catch (error) {
       setloading(false)
     }
   } 
-  console.log(formData)
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
