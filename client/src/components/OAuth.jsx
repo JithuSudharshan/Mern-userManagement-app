@@ -1,12 +1,13 @@
-import React from "react"
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth"
 import { app } from "../firebase"
 import { useDispatch } from "react-redux"
 import { signInSuccess } from "../redux/user/userSlice"
+import { useNavigate } from "react-router-dom"
 
 
 const OAuth = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate();
     const handleClick = async () => {
 
         try {
@@ -28,12 +29,13 @@ const OAuth = () => {
             const data = await res.json();
             console.log(data)
             dispatch(signInSuccess(data))
+            navigate('/')
         } catch (error) {
             console.log("couldnot login with error", error)
         }
     }
     return (
-        <button onClick={handleClick} type="button" className="bg-red-700 text-white rounded-lg p-3 uppercase hover:opacity-95" >Continue with google</button>
+        <button onClick={handleClick} type="button" className="bg-red-700 text-white rounded-lg p-3 uppercase hover:oapacity-95" >Continue with google</button>
     )
 }
 
