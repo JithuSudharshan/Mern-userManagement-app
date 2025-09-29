@@ -30,6 +30,7 @@ const Profile = () => {
       );
 
       const data = await res.json();
+      console.log(data)
       setImageUrl(data.secure_url); // Cloudinary hosted image URL
       setLoading(false);
 
