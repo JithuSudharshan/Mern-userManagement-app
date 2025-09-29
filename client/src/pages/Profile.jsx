@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice"
 
+
 const Profile = () => {
   const picRef = useRef(null);
   const { currentUser, } = useSelector((state) => state.user);
@@ -17,8 +18,6 @@ const Profile = () => {
     email: currentUser.email,
     password: "",
   });
-
-  console.log(currentUser)
 
 
   const handleChange = (e) => {
@@ -67,20 +66,41 @@ const Profile = () => {
 
     try {
       setLoading(true);
+
+      //prevent unchanged data from updating the db
+
+      const changes = {};
+      for (let key in updatedData) {
+        if (updatedData[key] && updatedData[key] !== currentUser[key]) {
+          changes[key] = updatedData[key];
+        }
+      }
+
+      if (Object.keys(changes).length === 0) {
+        alert("No changes made!");
+        return;
+      }
+
+
+      //fetching the backend to post the updated form data
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
       });
 
-
       const data = await res.json();
-      console.log("Updated user:", data);
       setUploaded(false);
+      if (data) {
+        //update the current user
+        dispatch(signInSuccess(data));
 
-      //update the current user
-      dispatch(signInSuccess(data));
-
+        // clear password after update
+        setUpdatedData((prev) => ({
+          ...prev,
+          password: "",
+        }));
+      }
 
     } catch (error) {
       console.log("User update failed:", error);
@@ -132,7 +152,7 @@ const Profile = () => {
           id="password"
           placeholder="Password"
           className="bg-slate-100 rounded-lg p-3"
-          value={updatedData.password}
+          value={currentUser.password}
           onChange={handleChange}
         />
 
