@@ -37,7 +37,7 @@ const SignIn = () => {
       const data = await res.json();
       console.log(data);
 
-      if (data.sucess === false) {
+      if (!data) {
         dispatch(signInFailure(data.message));
         return;
       }
@@ -71,7 +71,7 @@ const SignIn = () => {
         >
           {loading ? "Loading..." : "Sign in"}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Dont't have an account</p>
