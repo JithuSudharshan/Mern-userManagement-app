@@ -1,16 +1,17 @@
 import React, { useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { signInSuccess } from "../redux/user/userSlice"
+import { updateStart, updateSuccess, updateFailure } from "../redux/user/userSlice";
 
 
 const Profile = () => {
   const picRef = useRef(null);
-  const { currentUser, } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const [imageUrl, setImageUrl] = useState(currentUser.profilePicture);
-  const [loading, setLoading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [picload, setPicload] = useState(false)
 
   const [updatedData, setUpdatedData] = useState({
     profilePicture: currentUser.profilePicture,
@@ -33,7 +34,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setLoading(true);
+    setPicload(true);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -54,19 +55,20 @@ const Profile = () => {
       }));
 
       setUploaded(true);
+      setPicload(false)
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
-      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
+    setIsUpdated(false)
     e.preventDefault();
 
     try {
-      setLoading(true);
 
+      dispatch(updateStart());
       //prevent unchanged data from updating the db
 
       const changes = {};
@@ -93,7 +95,8 @@ const Profile = () => {
       setUploaded(false);
       if (data) {
         //update the current user
-        dispatch(signInSuccess(data));
+        dispatch(updateSuccess(data));
+        setIsUpdated(true);
 
         // clear password after update
         setUpdatedData((prev) => ({
@@ -103,9 +106,7 @@ const Profile = () => {
       }
 
     } catch (error) {
-      console.log("User update failed:", error);
-    } finally {
-      setLoading(false);
+      dispatch(updateFailure(error))
     }
   };
 
@@ -128,8 +129,8 @@ const Profile = () => {
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
         />
 
-        {loading && <p className="text-center text-sm text-gray-500">Uploading...</p>}
-        {uploaded && <p className="text-center text-green-500">Image uploaded successfully!</p>}
+        {picload && <p className="text-center text-sm text-gray-600">Uploading...</p>}
+        {uploaded && <p className="text-center text-green-700">Image uploaded successfully!</p>}
 
         <input
           type="text"
@@ -160,13 +161,17 @@ const Profile = () => {
           type="submit"
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
-          Update
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
 
       <div className="flex justify-between mt-5">
         <span className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign out</span>
+      </div>
+      <div>
+        <p className="text-red-500 mt-5 ">{error && "Something went wrong while updating!"}</p>
+        <p className="text-green-400">{isUpdated && "User is updated Sucessfuly!"}</p>
       </div>
     </div>
   );
